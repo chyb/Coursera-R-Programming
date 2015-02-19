@@ -1,0 +1,20 @@
+# Coursera-R-Programming
+
+ setwd("D://specdata")
+
+ pollutantmean <- function(directory, pollutant = "sulfate", id = 1:332){
+      meanpollutant <- NULL
+      directory <- getwd()
+
+      filenames <- as.character(list.files(directory))
+      filedir <- paste(directory,filenames,sep="/")
+
+      for(i in id){
+           filedata <- read.csv(filedir[i],header=TRUE,sep=",")
+           rmnapollutant <- filedata[!is.na(filedata[, pollutant]), pollutant]
+           meanpollutant <- c(meanpollutant,rmnapollutant)
+      }
+
+      meanpollutantdata <- round(mean(meanpollutant),3)
+      meanpollutantdata
+ }
