@@ -1,0 +1,21 @@
+# Coursera-R-Programming
+
+setwd("D://specdata")
+
+complete <- function(directory, id=1:332){
+     complcases <- NULL
+     directory <- getwd()
+     
+     filenames <- as.character(list.files(directory))
+     filedir <- paste(directory,filenames,sep="/")
+
+     j <- 1
+     for(i in id){
+          filedata <- read.csv(filedir[i],header=TRUE,sep=",")
+          complcases[j] <- sum(complete.cases(filedata))
+          j <- j+1
+     }
+     
+     completecases <- data.frame(id=id,nobs=complcases)
+     completecases
+}
