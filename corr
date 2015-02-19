@@ -1,0 +1,44 @@
+# Coursera-R-Programming
+
+ setwd("D://specdata")
+
+ corr <- function(directory,threshold = 0){
+     
+      complete <- function(directory, id=1:332){
+           complcases <- NULL
+           directory <- getwd()
+          
+           filenames <- as.character(list.files(directory))
+           filedir <- paste(directory,filenames,sep="/")
+          
+           j <- 1
+           for(i in id){
+                filedata <- read.csv(filedir[i],header=TRUE,sep=",")
+                complcases[j] <- sum(complete.cases(filedata))
+                j <- j+1
+           }
+          
+           completecases <- data.frame(id=id,nobs=complcases)
+           completecases
+      }
+     
+      compldata <- complete("specdata", 1:332)
+     
+      correlation <- NULL
+      complcaseid <- compldata$id[compldata$nobs > threshold]
+      directory <- getwd()
+     
+      filenames <- as.character(list.files(directory))
+      filedir <- paste(directory,filenames,sep="/")
+     
+      m <- 1
+      for(k in complcaseid){
+           filedata <- read.csv(filedir[k],header=TRUE,sep=",")
+           correlation[m] <- cor(filedata$sulfate,filedata$nitrate,use="complete.obs")
+           m <- m + 1
+      }
+     
+      correlation
+     
+ }
+
