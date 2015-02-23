@@ -1,0 +1,46 @@
+# Coursera-R-Programming
+
+hospoutcome <- read.csv("D://outcome-of-care-measures.csv", colClasses = "character")
+
+hospname = 2; hospstate = hospoutcome[,7];heartatt = 11; heartfai = 17; pneumonia = 23
+hospoutcome[, heartatt] <- as.numeric(hospoutcome[, heartatt])
+hospoutcome[, heartfai] <- as.numeric(hospoutcome[, heartfai])
+hospoutcome[, pneumonia] <- as.numeric(hospoutcome[, pneumonia])
+
+rankall <- function(outcome, num = "best"){
+     ratenames <- c("heart attack", "heart failure", "pneumonia")
+     statename <- sort(unique(hospstate))
+     hospranking <- NULL
+     
+     sortnumhosp <- function(hospoutcome, rates, num){
+          maxnumhosp <- dim(hospoutcome[!is.na(hospoutcome[ ,rates]), ])[1]
+          if(num == "worst"){
+               Nohosp <- hospoutcome[ ,hospname][order(hospoutcome[ ,rates], hospoutcome[ ,hospname])[maxnumhosp]]
+          }else if (num == "best"){
+               Nohosp <- hospoutcome[ ,hospname][order(hospoutcome[ ,rates], hospoutcome[ ,hospname])[1]]
+          }else if(num > maxnumhosp){
+               Nohosp <- NA
+          }else{
+               Nohosp <- hospoutcome[ ,hospname][order(hospoutcome[ ,rates], hospoutcome[ ,hospname])[num]]
+          }
+          Nohosp
+     }
+     
+     if(!outcome %in% ratenames){
+          stop("invalid outcome")
+     }else{
+          for (i in 1: length(statename)){
+               bystatename <- hospoutcome[hospstate == statename[i], ]
+               if(outcome == "heart attack"){
+                    hospranking[i] <- sortnumhosp(bystatename, heartatt, num)
+               }else if(outcome == "heart failure"){
+                    hospranking[i] <- sortnumhosp(bystatename, heartfai, num)
+               }else{
+                    hospranking[i] <- sortnumhosp(bystatename, pneumonia, num)
+               }
+          }
+     }
+     scrhosp <- data.frame(hospranking, statename)
+     colnames(scrhosp) <- c("hospital", "state")
+     scrhosp
+}
