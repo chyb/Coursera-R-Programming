@@ -1,0 +1,73 @@
+# Coursera-R-Programming
+
+hospoutcome <- read.csv("D://outcome-of-care-measures.csv", colClasses = "character")
+
+hospname = 2; hospstate = hospoutcome[,7];heartatt = 11; heartfai = 17; pneumonia = 23
+hospoutcome[, heartatt] <- as.numeric(hospoutcome[, heartatt])
+hospoutcome[, heartfai] <- as.numeric(hospoutcome[, heartfai])
+hospoutcome[, pneumonia] <- as.numeric(hospoutcome[, pneumonia])
+
+rankhospital <- function(state, outcome, num = "best"){
+     bystate <- hospoutcome[hospstate == state,]
+     
+    
+     best <- function(state,outcome){
+          
+          besthospnames <- function(hospoutcome, state, rates){
+               bystate <- hospoutcome[hospstate == state,]
+               bestscore <- which(bystate[,rates] == min(bystate[,rates], na.rm = TRUE))
+               besthosp <- bystate[bestscore,hospname]
+               besthosp
+          }
+          
+          ratenames <- c("heart attack", "heart failure", "pneumonia")
+          
+          if(! state %in% hospstate){
+               stop("invalid state")
+          } else if(! outcome %in% ratenames){
+               stop("invalid outcome")
+          }else{
+               if(outcome == "heart attack"){
+                    besthosp <- besthospnames(hospoutcome,state,heartatt)
+               }else if(outcome == "heart failure"){
+                    besthosp <- besthospnames(hospoutcome,state,heartfai)
+               }else {
+                    besthosp <- besthospnames(hospoutcome,state,pneumonia)
+               }
+               besthosp
+          }
+     }
+    
+     sortnumhosp <- function(hospoutcome, state, rates, num){
+          maxnumhosp <- dim(bystate[!is.na(bystate[ ,rates]), ])[1]
+          if(num == "worst"){
+               Nohosp <- bystate[ ,hospname][order(bystate[ ,rates], bystate[ ,hospname])[maxnumhosp]]
+          }else if (num > maxnumhosp){
+               Nohosp <- NA
+          }else{
+               Nohosp <- bystate[ ,hospname][order(bystate[ ,rates], bystate[ ,hospname])[num]]
+          }
+          Nohosp
+     }
+     
+   
+     ratenames <- c("heart attack", "heart failure", "pneumonia")
+     if(! state %in% hospstate){
+          stop("invalid state")
+     }else if(! outcome %in% ratenames){
+          stop("invalid outcome")
+     }else{
+          if(num == "best"){
+               rank <- best(state,outcome)
+          }else{
+               if(outcome == "heart attack"){
+                    rank <- sortnumhosp(hospoutcome, state, heartatt, num)
+               }else if(outcome == "heart failure"){
+                    rank <- sortnumhosp(hospoutcome, state, heartfai, num)
+               }else{
+                    rank <- sortnumhosp(hospoutcome, state, pneumonia, num)
+               }
+               rank
+          }
+     }
+}
